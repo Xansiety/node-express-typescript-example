@@ -1,40 +1,79 @@
 import express from 'express'
-import { getEntries } from '../services'
+import {
+  addEntry,
+  getById,
+  getEntries,
+  getEntriesWithoutSensitiveData
+} from '../services'
 import {
   genericResponse,
   genericResponseError
 } from '../utilities/generic-response.utility'
-import { Entry } from '../models/entries.model'
+import { Entry, NoSensitiveDiaryEntry } from '../models/entries.model'
 
 const router = express.Router()
 
 router.get('/', (_req, res) => {
   const entries = getEntries()
+  return res.status(400).send(
+    genericResponse<Entry[]>({
+      data: entries
+    })
+  )
+})
 
-  if (entries.length > 0) {
-    return res.status(400).send(
-      genericResponseError<string>({
-        ok: false,
-        message: 'No entries found',
-        error: 'No entries found - generic'
-      })
-    )
-  } else {
+router.get('/no-sensitive-data', (_req, res) => {
+  const entries = getEntriesWithoutSensitiveData()
+  return res.status(400).send(
+    genericResponse<NoSensitiveDiaryEntry[]>({
+      message: "This method doesn't return sensitive data with Omit<T, K>",
+      data: entries
+    })
+  )
+})
+
+router.get('/:id', (req, res) => {
+  const id = +req.params.id
+  const entry = getById(id)
+  if (entry !== undefined) {
     return res.status(200).send(
-      genericResponse<Entry[]>({
-        data: entries,
-        message: 'Getting all diaries',
-        ok: true
+      genericResponse<Entry>({
+        message: `Entry with id ${id} found`,
+        data: entry
       })
     )
   }
+  return res.status(404).send(
+    genericResponseError<string>({
+      ok: false,
+      message: `Entry with id ${id} not found`
+    })
+  )
 })
 
-router.post('/', (_req, res) => {
-  res.status(200).send({
-    ok: true,
-    message: 'Adding a new diary'
-  })
+router.post('/', (req, res) => {
+  try {
+    const { date, weather, visibility, comment, flightNumber } = req.body
+    const entryAdded = addEntry({
+      date,
+      weather,
+      visibility,
+      comment,
+      flightNumber
+    })
+    res.status(200).send({
+      ok: true,
+      message: `Entry added successfully with id ${entryAdded.id}`,
+      data: entryAdded
+    })
+  } catch (error: any) {
+    res.status(400).send(
+      genericResponseError<string>({
+        ok: false,
+        message: error.message
+      })
+    )
+  }
 })
 
 export default router

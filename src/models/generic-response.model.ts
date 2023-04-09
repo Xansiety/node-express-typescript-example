@@ -1,10 +1,10 @@
 export interface IGenericResponseOptions<T> {
-  ok: boolean
+  ok?: boolean
   message?: string | null
   data: T
 }
 export interface IGenericResponse<T> {
-  ok: boolean
+  ok?: boolean
   message?: string | null
   data: T
 }

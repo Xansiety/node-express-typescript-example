@@ -6,7 +6,7 @@ import {
 } from '../models/generic-response.model'
 
 export const genericResponse = <T>({
-  ok,
+  ok = true,
   message = null,
   data
 }: IGenericResponseOptions<T>): IGenericResponse<T> => {
