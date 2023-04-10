@@ -10,6 +10,7 @@ import {
   genericResponseError
 } from '../utilities/generic-response.utility'
 import { Entry, NoSensitiveDiaryEntry } from '../models/entries.model'
+import { toNewDiaryEntryAdapter } from '../adapter'
 
 const router = express.Router()
 
@@ -53,14 +54,8 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   try {
-    const { date, weather, visibility, comment, flightNumber } = req.body
-    const entryAdded = addEntry({
-      date,
-      weather,
-      visibility,
-      comment,
-      flightNumber
-    })
+    const requestEntry = toNewDiaryEntryAdapter(req.body)
+    const entryAdded = addEntry(requestEntry)
     res.status(200).send({
       ok: true,
       message: `Entry added successfully with id ${entryAdded.id}`,

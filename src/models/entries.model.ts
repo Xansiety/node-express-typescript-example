@@ -1,5 +1,20 @@
-export type Weather = 'sunny' | 'rainy' | 'hurricane'
-export type Visibility = 'good' | 'bad'
+// export type Weather = 'sunny' | 'rainy' | 'hurricane'
+// export type Visibility = 'good' | 'bad'
+
+export enum Weather {
+  sunny = 'sunny',
+  rainy = 'rainy',
+  hurricane = 'hurricane',
+  windy = 'windy',
+  stormy = 'stormy'
+}
+
+export enum Visibility {
+  good = 'good',
+  bad = 'bad',
+  notbad = 'notbad',
+  goodhelpme = 'goodhelpme'
+}
 
 export interface Entry {
   id: string
